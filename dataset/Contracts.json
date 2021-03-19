@@ -1,0 +1,58 @@
+{
+	"name": "Contracts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CardHolderSQLDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CompanyID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Manfac_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "RecordCount",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SAP_Cust_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "CompanyName",
+				"type": "varchar"
+			},
+			{
+				"name": "ContractStartTime",
+				"type": "varchar"
+			},
+			{
+				"name": "ContractEndTime",
+				"type": "varchar"
+			},
+			{
+				"name": "CardCount",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SpaceCount",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Contracts"
+		}
+	}
+}

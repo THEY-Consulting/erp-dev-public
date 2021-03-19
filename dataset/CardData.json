@@ -1,0 +1,49 @@
+{
+	"name": "CardData",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CardHolderSQLDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Manfac_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Inst_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ExportTime",
+				"type": "varchar"
+			},
+			{
+				"name": "Version",
+				"type": "varchar"
+			},
+			{
+				"name": "RecordCount",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ExpTime",
+				"type": "varchar"
+			},
+			{
+				"name": "FileSequence",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "CardHolderData"
+		}
+	}
+}
