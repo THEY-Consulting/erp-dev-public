@@ -14,7 +14,7 @@
 				"precision": 19
 			},
 			{
-				"name": "Manfac_ID",
+				"name": "Inst_ID",
 				"type": "bigint",
 				"precision": 19
 			},
@@ -33,11 +33,15 @@
 			},
 			{
 				"name": "ContractStartTime",
-				"type": "varchar"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "ContractEndTime",
-				"type": "varchar"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "CardCount",

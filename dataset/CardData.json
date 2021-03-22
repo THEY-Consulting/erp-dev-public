@@ -20,7 +20,9 @@
 			},
 			{
 				"name": "ExportTime",
-				"type": "varchar"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "Version",
@@ -33,12 +35,18 @@
 			},
 			{
 				"name": "ExpTime",
-				"type": "varchar"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "FileSequence",
 				"type": "bigint",
 				"precision": 19
+			},
+			{
+				"name": "FilenameImported",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
