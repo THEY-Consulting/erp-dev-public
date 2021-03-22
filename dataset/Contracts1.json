@@ -9,12 +9,17 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "ContractId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
 				"name": "CompanyID",
 				"type": "bigint",
 				"precision": 19
 			},
 			{
-				"name": "Inst_ID",
+				"name": "CardHolderDataId",
 				"type": "bigint",
 				"precision": 19
 			},

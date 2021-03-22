@@ -9,7 +9,17 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "PartIdPk",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
 				"name": "Participant_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "ContractId",
 				"type": "bigint",
 				"precision": 19
 			},
@@ -57,8 +67,9 @@
 			},
 			{
 				"name": "Amount",
-				"type": "int",
-				"precision": 10
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
 			},
 			{
 				"name": "CarportID",
