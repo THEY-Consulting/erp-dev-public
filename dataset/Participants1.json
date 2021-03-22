@@ -1,0 +1,74 @@
+{
+	"name": "Participants1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CardHolderSQLDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Participant_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SAP_Cust_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Cust_Card_ID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "LastName",
+				"type": "varchar"
+			},
+			{
+				"name": "FirstName",
+				"type": "varchar"
+			},
+			{
+				"name": "CardValStartTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CardValEndTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Blocked",
+				"type": "varchar"
+			},
+			{
+				"name": "Paid",
+				"type": "varchar"
+			},
+			{
+				"name": "CardType",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Amount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CarportID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Participants"
+		}
+	}
+}
