@@ -5,20 +5,20 @@
 		"factoryName": {
 			"value": "ERP2-DEV"
 		},
+		"AzureDataLakeStorageV2_accountKey": {
+			"value": ""
+		},
 		"CardHolderDataBlobStorage_connectionString": {
 			"value": ""
 		},
 		"CardHolderSQLDatabase_connectionString": {
 			"value": ""
 		},
-		"AzureDataLakeStorageV2_accountKey": {
-			"value": ""
+		"AzureDataLakeStorageV2_properties_typeProperties_url": {
+			"value": "https://bloberpgenpurpouse.dfs.core.windows.net"
 		},
 		"NewXML_properties_typeProperties_scope": {
 			"value": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
-		},
-		"AzureDataLakeStorageV2_properties_typeProperties_url": {
-			"value": "https://bloberpgenpurpouse.dfs.core.windows.net"
 		}
 	}
 }

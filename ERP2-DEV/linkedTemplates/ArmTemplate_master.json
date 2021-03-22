@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ERP2-DEV"
 		},
+		"AzureDataLakeStorageV2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageV2'"
+		},
 		"CardHolderDataBlobStorage_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CardHolderDataBlobStorage'"
@@ -15,17 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CardHolderSQLDatabase'"
 		},
-		"AzureDataLakeStorageV2_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageV2'"
+		"AzureDataLakeStorageV2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bloberpgenpurpouse.dfs.core.windows.net"
 		},
 		"NewXML_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
-		},
-		"AzureDataLakeStorageV2_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://bloberpgenpurpouse.dfs.core.windows.net"
 		},
 		"containerUri": {
 			"type": "string",
@@ -54,14 +54,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureDataLakeStorageV2_accountKey": {
+						"value": "[parameters('AzureDataLakeStorageV2_accountKey')]"
+					},
 					"CardHolderDataBlobStorage_connectionString": {
 						"value": "[parameters('CardHolderDataBlobStorage_connectionString')]"
 					},
 					"CardHolderSQLDatabase_connectionString": {
 						"value": "[parameters('CardHolderSQLDatabase_connectionString')]"
-					},
-					"AzureDataLakeStorageV2_accountKey": {
-						"value": "[parameters('AzureDataLakeStorageV2_accountKey')]"
 					},
 					"AzureDataLakeStorageV2_properties_typeProperties_url": {
 						"value": "[parameters('AzureDataLakeStorageV2_properties_typeProperties_url')]"
