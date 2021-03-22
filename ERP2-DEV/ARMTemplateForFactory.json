@@ -88,7 +88,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "DataFlowFull",
+						"name": "DataFlowFullMoreFiles",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
