@@ -9,6 +9,11 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "CardHolderDataId",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
 				"name": "Manfac_ID",
 				"type": "bigint",
 				"precision": 19
