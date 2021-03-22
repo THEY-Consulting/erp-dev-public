@@ -1,0 +1,17 @@
+{
+	"name": "CardDataV2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorageV2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "xmlinput"
+			}
+		}
+	}
+}
