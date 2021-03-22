@@ -1,0 +1,24 @@
+{
+	"name": "NewXML",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipelineAllFiles",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/xmlinput/blobs/",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
