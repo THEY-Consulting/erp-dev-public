@@ -26,6 +26,10 @@
 		"NewXML_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
+		},
+		"NewXMLInBlob_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
 		}
 	},
 	"variables": {
@@ -71,6 +75,26 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('CardHolderSQLDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Every Day')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 24,
+						"startTime": "2021-03-22T10:10:00Z",
+						"timeZone": "UTC"
+					}
 				}
 			},
 			"dependsOn": []
@@ -799,36 +823,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Every Day')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipelineAllFiles",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 24,
-						"startTime": "2021-03-22T10:10:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipelineAllFiles')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/NewXML')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -849,6 +843,36 @@
 					"blobPathBeginsWith": "/xmlinput/blobs/",
 					"ignoreEmptyBlobs": true,
 					"scope": "[parameters('NewXML_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipelineAllFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NewXMLInBlob')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipelineAllFiles",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/xmlinput/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('NewXMLInBlob_properties_typeProperties_scope')]",
 					"events": [
 						"Microsoft.Storage.BlobCreated"
 					]

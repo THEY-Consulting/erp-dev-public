@@ -27,6 +27,10 @@
 			"type": "string",
 			"defaultValue": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
 		},
+		"NewXMLInBlob_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -68,6 +72,9 @@
 					},
 					"NewXML_properties_typeProperties_scope": {
 						"value": "[parameters('NewXML_properties_typeProperties_scope')]"
+					},
+					"NewXMLInBlob_properties_typeProperties_scope": {
+						"value": "[parameters('NewXMLInBlob_properties_typeProperties_scope')]"
 					}
 				}
 			},
