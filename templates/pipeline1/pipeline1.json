@@ -1,0 +1,375 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"CardHolderDataBlobStorage": {
+			"type": "string"
+		},
+		"CardHolderSQLDatabase": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DataFlowFull",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DataFlowFull",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DataFlowFull')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataFlowFull')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "CardDataBlob",
+								"type": "DatasetReference"
+							},
+							"name": "CardData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Participants",
+								"type": "DatasetReference"
+							},
+							"name": "ParticipantsSing"
+						},
+						{
+							"dataset": {
+								"referenceName": "CardData",
+								"type": "DatasetReference"
+							},
+							"name": "CardDataSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "Contracts",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						},
+						{
+							"dataset": {
+								"referenceName": "CardHolderDataJson",
+								"type": "DatasetReference"
+							},
+							"name": "CardDataBlobJson"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Contracts"
+						},
+						{
+							"name": "Participants"
+						},
+						{
+							"name": "cleandate"
+						},
+						{
+							"name": "cleanDates"
+						},
+						{
+							"name": "cleanDatesForParticipants"
+						}
+					],
+					"script": "source(output(\n\t\tCardHolderData as ({@ExpTime} as timestamp, {@FileSequence} as short, {@InstID} as short, {@RecordCount} as short, {@Version} as double, Contract as ({@RecordCount} as short, CardCount as short, CompanyID as short, CompanyName as string, ContractEndTime as timestamp, ContractStartTime as timestamp, Ptcpt as (Amount as boolean, Blocked as boolean, CardType as short, CardValEndTime as timestamp, CardValStartTime as timestamp, CarportID as boolean, Cust_Card_ID as string, FirstName as string, LastName as string, Paid as string, Participant_ID as short)[], SAP_Cust_ID as string, SpaceCount as short)[], ExportTime as timestamp, Inst_ID as short, Manfac_ID as boolean)\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tlimit: 100,\n\trowUrlColumn: 'FileNameImported',\n\tvalidationMode: 'none',\n\tnamespaces: true,\n\twildcardPaths:['*.CHD']) ~> CardData\ncleandate foldDown(unroll(CardHolderData.Contract, CardHolderData.Contract),\n\tmapColumn(\n\t\t{@RecordCount} = CardHolderData.Contract.{@RecordCount},\n\t\tCardCount = CardHolderData.Contract.CardCount,\n\t\tCompanyID = CardHolderData.Contract.CompanyID,\n\t\tCompanyName = CardHolderData.Contract.CompanyName,\n\t\tContractEndTime = CardHolderData.Contract.ContractEndTime,\n\t\tContractStartTime = CardHolderData.Contract.ContractStartTime,\n\t\tPtcpt = CardHolderData.Contract.Ptcpt,\n\t\tSAP_Cust_ID = CardHolderData.Contract.SAP_Cust_ID,\n\t\tSpaceCount = CardHolderData.Contract.SpaceCount,\n\t\tManfac_ID = CardHolderData.Manfac_ID,\n\t\tManfac_ID_Long,\n\t\tInst_ID = CardHolderData.Inst_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Contracts\ncleanDates foldDown(unroll(Ptcpt, Ptcpt),\n\tmapColumn(\n\t\tAmount = Ptcpt.Amount,\n\t\tBlocked = Ptcpt.Blocked,\n\t\tCardType = Ptcpt.CardType,\n\t\tCardValEndTime = Ptcpt.CardValEndTime,\n\t\tCardValStartTime = Ptcpt.CardValStartTime,\n\t\tCarportID = Ptcpt.CarportID,\n\t\tCust_Card_ID = Ptcpt.Cust_Card_ID,\n\t\tFirstName = Ptcpt.FirstName,\n\t\tLastName = Ptcpt.LastName,\n\t\tPaid = Ptcpt.Paid,\n\t\tParticipant_ID = Ptcpt.Participant_ID,\n\t\tSAP_Cust_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Participants\nCardData derive({CardHolderData.ExportTimeDateString} = toTimestamp(toString(CardHolderData.ExportTime),\"yyyyMMddHHmmss\"),\n\t\tManfac_ID_Long = toLong(case(CardHolderData.Manfac_ID, 1 , 0))) ~> cleandate\nContracts derive(ContractEndTimeDate = toTimestamp(toString(ContractEndTime), 'yyyyMMddHHmmss'),\n\t\tContractStartTimeDate = toTimestamp(toString(ContractStartTime), 'yyyyMMddHHmmss')) ~> cleanDates\nParticipants derive(CardValEndTimeDate = toTimestamp(toString(CardValEndTime), 'yyyyMMddHHmmss'),\n\t\tCardValStartTimeDate = toTimestamp(toString(CardValStartTime), 'yyyyMMddHHmmss'),\n\t\tAmount_Long = toLong(case(Amount,1,0)),\n\t\tBlocked_Long = toLong(case(Blocked,1,0)),\n\t\tCarport_ID_Long = toLong(case(CarportID,1,0)),\n\t\tBlocked_String = toString(case(Blocked,\"Y\",\"N\"))) ~> cleanDatesForParticipants\ncleanDatesForParticipants sink(input(\n\t\tParticipant_ID as long,\n\t\tSAP_Cust_ID as string,\n\t\tCust_Card_ID as long,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tCardValStartTime as timestamp,\n\t\tCardValEndTime as timestamp,\n\t\tBlocked as string,\n\t\tPaid as string,\n\t\tCardType as integer,\n\t\tAmount as integer,\n\t\tCarportID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tParticipant_ID,\n\t\tSAP_Cust_ID,\n\t\tLastName,\n\t\tFirstName,\n\t\tCardValStartTime = CardValStartTimeDate,\n\t\tCardValEndTime = CardValEndTimeDate,\n\t\tPaid,\n\t\tCardType,\n\t\tAmount = Amount_Long,\n\t\tBlocked = Blocked_String,\n\t\tCarportID = Carport_ID_Long\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> ParticipantsSing\ncleandate sink(input(\n\t\tManfac_ID as long,\n\t\tInst_ID as long,\n\t\tExportTime as timestamp,\n\t\tVersion as string,\n\t\tRecordCount as long,\n\t\tExpTime as timestamp,\n\t\tFileSequence as long,\n\t\tFilenameImported as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tManfac_ID = Manfac_ID_Long,\n\t\tInst_ID = CardHolderData.Inst_ID,\n\t\tExportTime = {CardHolderData.ExportTimeDateString},\n\t\tVersion = CardHolderData.{@Version},\n\t\tRecordCount = CardHolderData.{@RecordCount},\n\t\tExpTime = {CardHolderData.ExportTimeDateString},\n\t\tFileSequence = CardHolderData.{@FileSequence},\n\t\tFilenameImported = FileNameImported\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> CardDataSink\ncleanDates sink(input(\n\t\tCompanyID as long,\n\t\tInst_ID as long,\n\t\tRecordCount as long,\n\t\tSAP_Cust_ID as string,\n\t\tCompanyName as string,\n\t\tContractStartTime as timestamp,\n\t\tContractEndTime as timestamp,\n\t\tCardCount as long,\n\t\tSpaceCount as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tCompanyID,\n\t\tSAP_Cust_ID,\n\t\tCompanyName,\n\t\tCardCount,\n\t\tSpaceCount,\n\t\tContractStartTime = ContractStartTimeDate,\n\t\tContractEndTime = ContractEndTimeDate,\n\t\tInst_ID,\n\t\tRecordCount = {@RecordCount}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink3\ncleandate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tmapColumn(\n\t\tCardHolderData,\n\t\tFileNameImported,\n\t\tExportTimeDateString = {CardHolderData.ExportTimeDateString},\n\t\tManfac_ID_Long\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> CardDataBlobJson"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CardDataBlob')]",
+				"[concat(variables('factoryId'), '/datasets/Participants')]",
+				"[concat(variables('factoryId'), '/datasets/CardData')]",
+				"[concat(variables('factoryId'), '/datasets/Contracts')]",
+				"[concat(variables('factoryId'), '/datasets/CardHolderDataJson')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CardDataBlob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('CardHolderDataBlobStorage')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "erp2"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Participants')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('CardHolderSQLDatabase')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Participant_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "SAP_Cust_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Cust_Card_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "LastName",
+						"type": "varchar"
+					},
+					{
+						"name": "FirstName",
+						"type": "varchar"
+					},
+					{
+						"name": "CardValStartTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CardValEndTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Blocked",
+						"type": "varchar"
+					},
+					{
+						"name": "Paid",
+						"type": "varchar"
+					},
+					{
+						"name": "CardType",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Amount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CarportID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Participants"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CardData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('CardHolderSQLDatabase')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Manfac_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "Inst_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "ExportTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Version",
+						"type": "varchar"
+					},
+					{
+						"name": "RecordCount",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "ExpTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FileSequence",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "FilenameImported",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CardHolderData"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Contracts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('CardHolderSQLDatabase')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CompanyID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "Inst_ID",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "RecordCount",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "SAP_Cust_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "CompanyName",
+						"type": "varchar"
+					},
+					{
+						"name": "ContractStartTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ContractEndTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CardCount",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "SpaceCount",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Contracts"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CardHolderDataJson')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('CardHolderDataBlobStorage')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "erp-export-json"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		}
+	]
+}
