@@ -11,6 +11,15 @@
 		"CardHolderSQLDatabase_connectionString": {
 			"value": ""
 		},
+		"AzureDataLakeStorageV2_accountKey": {
+			"value": ""
+		},
+		"NewXML_properties_typeProperties_scope": {
+			"value": "/subscriptions/bae375c7-4774-49cb-8b45-b69ea8f8c3ae/resourceGroups/DEV-ERP/providers/Microsoft.Storage/storageAccounts/bloberpgenpurpouse"
+		},
+		"AzureDataLakeStorageV2_properties_typeProperties_url": {
+			"value": "https://bloberpgenpurpouse.dfs.core.windows.net"
+		},
 		"containerUri": {
 			"value": ""
 		},
