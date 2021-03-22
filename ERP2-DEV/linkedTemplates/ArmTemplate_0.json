@@ -746,6 +746,36 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DataFlowFullMoreFiles')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Every Day')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipelineAllFiles",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 24,
+						"startTime": "2021-03-22T10:10:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipelineAllFiles')]"
+			]
 		}
 	]
 }
