@@ -1,0 +1,17 @@
+{
+	"name": "CardDataBlob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CardHolderDataBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "erp2"
+			}
+		}
+	}
+}
